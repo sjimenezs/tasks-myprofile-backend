@@ -1,0 +1,18 @@
+package myprofile.common.error;
+
+import myprofile.common.result.Result;
+
+import java.util.List;
+
+public class ErrorCodes {
+    public static final String USERNAME_REQUIRED="USERNAME_REQUIRED";
+    public static final String NO_TORRE_API_DEFINED = "NO_TORRE_API_DEFINED";
+    public static final String USER_FETCH_ERROR = "USER_FETCH_ERROR";
+    public static final String USER_FETCH_READ_ERROR = "USER_FETCH_READ_ERROR";
+    public static final String NO_TORRE_SEARCH_API_DEFINED = "NO_TORRE_SEARCH_API_DEFINED";
+    public static final String JOBSYNC_FETCH_ERROR = "JOBSYNC_FETCH_ERROR";
+    public static final String SAVE_JOB_ERROR = "SAVE_JOB_ERROR";
+    public static final String SAVE_SKILL_ERROR = "SAVE_SKILL_ERROR";
+    public static final String FETCH_SKILL_ERROR = "FETCH_SKILL_ERROR";
+    public static final String SAVE_JOBSKILL_ERROR = "SAVE_JOBSKILL_ERROR";
+}

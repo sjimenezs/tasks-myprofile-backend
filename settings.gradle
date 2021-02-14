@@ -1,0 +1,5 @@
+rootProject.name = 'myprofileback'
+include 'server'
+include 'common'
+include 'profile'
+

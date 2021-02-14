@@ -1,0 +1,22 @@
+plugins {
+    id 'java'
+}
+
+group 'samueljimenez'
+version '0.0.1'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile group: 'org.mybatis', name: 'mybatis', version: '3.5.6'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.12.1'
+    compile group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.9.1'
+}
+
+test {
+    useJUnitPlatform()
+}
