@@ -424,3 +424,5 @@ buildNumber.properties
 .idea/
 *.iml
 *.iw
+
+gradle/wrapper/**
