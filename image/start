@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+echo "INICIANDO"
+printf "\n\033[0;44m---> Starting the SSH server.\033[0m\n"
+echo "PUBLIC IP"
+curl ipinfo.io/ip
+echo "STORAGE"
+cd /app/server/bin/
+echo "Memoria Java: $MEMORYSIZE"
+echo "file system:"
+df -h
+/app/java/bin/java -Dlogback.configurationFile=./log.xml -jar services-1.0-SNAPSHOT.jar 8080
