@@ -22,6 +22,7 @@ phases:
       - wget https://services.gradle.org/distributions/gradle-6.8.2-bin.zip
       - unzip -d /opt/gradle gradle-6.8.2-bin.zip
       - export PATH=$PATH:/opt/gradle/gradle-6.8.2/bin
+      - /opt/gradle/gradle-6.8.2/bin/gradle -v
   build:
     commands:
       - ls /codebuild/output/*
@@ -36,9 +37,9 @@ phases:
       - cd ..
       - export JAVA_HOME=$CODEBUILD_SRC_DIR/image/java
       - export PATH=$PATH:$CODEBUILD_SRC_DIR/image/java/bin
-      - gradle -v
+      - /opt/gradle/gradle-6.8.2/bin/gradle -v
       - cd server
-      - gradle bootJar
+      - /opt/gradle/gradle-6.8.2/bin/gradle bootJar
       - cd ..
       - mv server/build/server-0.0.1.jar image/server/server-0.0.1.jar
       - docker build -t $REPOSITORY_URI:latest ./
