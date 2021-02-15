@@ -23,12 +23,14 @@ public class SchemaUpdater {
 
     public void update() throws Exception {
         var file = new File(System.getenv("DB_SCHEMA_BASE_FILE"));
-        java.sql.Connection connection = openConnection();
-        Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection));
+        try (java.sql.Connection connection = openConnection()) {
+            Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection));
 
-        var resourceAccesor = new FileSystemResourceAccessor(new File(System.getenv("DB_SCHEMA_BASE_FOLDER")));
+            var resourceAccesor = new FileSystemResourceAccessor(new File(System.getenv("DB_SCHEMA_BASE_FOLDER")));
 
-        Liquibase liquibase = new liquibase.Liquibase(file.getPath(), resourceAccesor, database);
-        liquibase.update(new Contexts(), new LabelExpression());
+            try (Liquibase liquibase = new liquibase.Liquibase(file.getPath(), resourceAccesor, database)) {
+                liquibase.update(new Contexts(), new LabelExpression());
+            }
+        }
     }
 }

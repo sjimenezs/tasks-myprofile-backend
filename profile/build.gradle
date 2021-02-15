@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id "org.sonarqube" version "3.1.1"
 }
 
 version 'unspecified'
@@ -22,4 +23,12 @@ dependencies {
 
 test {
     useJUnitPlatform()
+}
+
+sonarqube {
+    properties {
+        property "sonar.projectKey", "sjimenezs_tasks-myprofile-backend"
+        property "sonar.organization", "sjimenezs-tasks-myprofile-back"
+        property "sonar.host.url", "https://sonarcloud.io"
+    }
 }
