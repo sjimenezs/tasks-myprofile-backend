@@ -5,6 +5,7 @@ ENV LANG es_CO.UTF-8
 ENV LANGUAGE es_CO
 RUN mkdir -p /app/server/
 COPY server /app/server/bin
+COPY schema /app/server/schema
 COPY java /app/java
 COPY start /app/server/bin/start.sh
 COPY log.xml /app/server/bin/log.xml
