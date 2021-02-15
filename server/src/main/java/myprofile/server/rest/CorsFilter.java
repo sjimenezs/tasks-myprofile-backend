@@ -27,9 +27,9 @@ public class CorsFilter implements Filter {
 
         if (origin != null) {
             if (origin.toLowerCase().endsWith("demo.samueljimenez.co") || "TRUE".equalsIgnoreCase(System.getenv("DEVELOP"))) {
-                resp.addHeader("Access-Control-Allow-Origin", origin);
-                resp.addHeader("Access-Control-Allow-Headers", "Authorization, Content-Type, username");
-                resp.addHeader("Access-Control-Request-Method", "POST,GET");
+                resp.setHeader("Access-Control-Allow-Origin", origin);
+                resp.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type, username");
+                resp.setHeader("Access-Control-Request-Method", "POST,GET");
             }
         }
     }

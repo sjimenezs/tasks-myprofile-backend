@@ -50,9 +50,9 @@ public class ProfileConnectionFactoryImpl implements ProfileConnectionFactory {
 
     private DataSource makeDataSource() {
         BasicDataSource dataSource = new BasicDataSource();
-        dataSource.setUrl("DB_URL");
-        dataSource.setUsername("DB_USER");
-        dataSource.setPassword("DB_PASSWORD");
+        dataSource.setUrl(System.getenv("DB_URL"));
+        dataSource.setUsername(System.getenv("DB_USER"));
+        dataSource.setPassword(System.getenv("DB_PASSWORD"));
         return dataSource;
     }
 
