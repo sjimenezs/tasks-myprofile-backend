@@ -26,14 +26,10 @@ phases:
       - rm -rf server
       - mkdir server
       - cd ..
-      - mvn clean package -Dmaven.test.skip=true -Dhttps.protocols=TLSv1.2
-      - rm -rf server/target/classes
-      - rm -rf server/target/generated-sources
-      - rm -rf server/target/maven-status
-      - rm -rf server/target/maven-archiver
-      - rm -rf server/target/test-classes
-      - mv server/target/* build/server
-      - cd build
+      - cd server
+      - gradle bootJar
+      - cd ..
+      - mv server/build/server-0.0.1.jar image/server/server-0.0.1.jar
       - docker build -t $REPOSITORY_URI:latest ./
       - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
   post_build:

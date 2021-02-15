@@ -32,7 +32,7 @@ dependencies {
 }
 
 application {
-    mainClass = 'blazar.server.KeplerApplication'
+    mainClass = 'myprofile.server.MyProfileApplication'
 }
 
 test {

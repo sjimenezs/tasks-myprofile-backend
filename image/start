@@ -8,4 +8,4 @@ cd /app/server/bin/
 echo "Memoria Java: $MEMORYSIZE"
 echo "file system:"
 df -h
-/app/java/bin/java -Dlogback.configurationFile=./log.xml -jar services-1.0-SNAPSHOT.jar 8080
+/app/java/bin/java server-0.0.1.jar
