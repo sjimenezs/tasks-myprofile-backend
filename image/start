@@ -8,4 +8,4 @@ cd /app/server/bin/
 echo "Memoria Java: $MEMORYSIZE"
 echo "file system:"
 df -h
-/app/java/bin/java server-0.0.1.jar
+/app/java/bin/java -jar server-0.0.1.jar
