@@ -41,7 +41,7 @@ phases:
       - cd server
       - /opt/gradle/gradle-6.8.2/bin/gradle bootJar
       - cd ..
-      - mv server/build/server-0.0.1.jar image/server/server-0.0.1.jar
+      - mv server/build/libs/server-0.0.1.jar image/server/server-0.0.1.jar
       - docker build -t $REPOSITORY_URI:latest ./
       - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
   post_build:
