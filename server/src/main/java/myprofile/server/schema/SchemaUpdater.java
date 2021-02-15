@@ -27,7 +27,7 @@ public class SchemaUpdater {
         java.sql.Connection connection = openConnection();
         Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection));
 
-        var resourceAccesor = new FileSystemResourceAccessor(new File("./"));
+        var resourceAccesor = new FileSystemResourceAccessor(new File(System.getenv("DB_SCHEMA_BASE_FOLDER")));
 
         Liquibase liquibase = new liquibase.Liquibase(file.getPath(), resourceAccesor, database);
         liquibase.update(new Contexts(), new LabelExpression());
