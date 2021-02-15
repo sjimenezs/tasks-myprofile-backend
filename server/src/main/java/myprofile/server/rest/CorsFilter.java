@@ -32,9 +32,8 @@ public class CorsFilter implements Filter {
                 resp.setHeader(HEADER_NAME_ACCES_CONTROL_ALLOW_ORIGIN, "http://localhost:3000");
             }
 
-            resp.addHeader(HEADER_NAME_ACCES_CONTROL_ALLOW_ORIGIN, origin);
-            resp.addHeader("Access-Control-Allow-Headers", "Authorization, Content-Type, username");
-            resp.addHeader("Access-Control-Request-Method", "POST,GET");
+            resp.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type, username");
+            resp.setHeader("Access-Control-Request-Method", "POST,GET");
         }
     }
 }
