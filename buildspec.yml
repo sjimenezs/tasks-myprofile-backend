@@ -19,7 +19,7 @@ phases:
     commands:
       - wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.4.0.2170-linux.zip
       - unzip sonar-scanner-cli-4.4.0.2170-linux.zip
-      - ./sonar-scanner-4.4.0.2170-linux/bin/sonar-scanner   -Dsonar.organization=sjimenezs   -Dsonar.projectKey=sjimenezs-tasks-myprofile-back   -Dsonar.sources=./   -Dsonar.host.url=https://sonarcloud.io
+      - ./sonar-scanner-4.4.0.2170-linux/bin/sonar-scanner   -Dsonar.organization=sjimenezs-tasks-myprofile-back   -Dsonar.projectKey=sjimenezs_tasks-myprofile-backend   -Dsonar.sources=./   -Dsonar.host.url=https://sonarcloud.io
       - echo Installing gradle
       - mkdir -p /opt/gradle
       - wget https://services.gradle.org/distributions/gradle-6.8.2-bin.zip
