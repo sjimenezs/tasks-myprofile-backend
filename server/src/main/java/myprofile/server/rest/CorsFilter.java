@@ -23,7 +23,6 @@ public class CorsFilter implements Filter {
         if (origin == null) {
             origin = req.getHeader("origin");
         }
-        System.out.println("origin:" + origin);
 
         if (origin != null) {
             if (origin.toLowerCase().endsWith("demo.samueljimenez.co") || "TRUE".equalsIgnoreCase(System.getenv("DEVELOP"))) {

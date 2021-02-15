@@ -92,7 +92,7 @@ public class ProfileServicesImpl implements ProfileServices {
         return ok(false);
     }
 
-    @Scheduled(fixedDelay = 1000 * 60 * 60)
+    @Scheduled(fixedDelay = 1000 * 60 * 60 * 24)
     public void syncJobsOfferTask() {
         var rHaveToSync = this.haveToSyncJobs();
         if (rHaveToSync.isError()) {
