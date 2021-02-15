@@ -1,6 +1,7 @@
 package myprofile.profile.dao;
 
 import myprofile.common.dto.JobUserSkillDTO;
+import myprofile.common.dto.UserSkillJobsDTO;
 import myprofile.common.model.UserSkill;
 import myprofile.common.result.Result;
 
@@ -14,4 +15,6 @@ public interface UserSkillDAO {
     Result<List<Integer>> fetchAllIdsByIdUser(SqlSession session, String idUser);
 
     Result<List<JobUserSkillDTO>> fetchMatchedSkillJobs(SqlSession session, String idUser);
+
+    Result<List<UserSkillJobsDTO>> countJobsPerSkillByIdUser(SqlSession session, String idUser);
 }

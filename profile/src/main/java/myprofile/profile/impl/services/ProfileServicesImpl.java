@@ -318,5 +318,55 @@ public class ProfileServicesImpl implements ProfileServices {
         }
         return 0;
     }
+
+    @Override
+    public Result<CountJobsPerSkillResponse> countJobsPerSkillByIdUser(CountJobsPerSkillRequest request) {
+        if (request == null || request.getUsername() == null || request.getUsername().isEmpty()) {
+            return error(ErrorCodes.USERNAME_REQUIRED);
+        }
+
+        var resultOpenSession = this.connectionFactory.openSession();
+        if (resultOpenSession.isError()) {
+            return error(resultOpenSession);
+        }
+        try (var session = resultOpenSession.ok()) {
+            var resultFetchUser = this.userDAO.fetchByUsername(session, request.getUsername());
+            if (resultFetchUser.isError()) {
+                return error(resultFetchUser);
+            }
+
+            var user = resultFetchUser.ok();
+            if (user.isEmpty()) {
+                return error(ErrorCodes.NO_USER_FOUND);
+            }
+
+            var resultFetchsKills = this.skillDAO.fetchAll(session);
+            if (resultFetchsKills.isError()) {
+                return error(resultFetchsKills);
+            }
+
+            var skillsNameById = resultFetchsKills.ok().stream().collect(Collectors.toMap(skill -> skill.getId(), skill -> skill.getName()));
+
+            var resultJobsPerSkill = this.userSkillDAO.countJobsPerSkillByIdUser(session, user.get().getId());
+            if (resultJobsPerSkill.isError()) {
+                return error(resultJobsPerSkill);
+            }
+            var totalJobsPerSkill = resultJobsPerSkill.ok().stream()
+                    .map(skill -> {
+                        var name = skillsNameById.get(skill.getIdSkill());
+                        if (name != null) {
+                            skill.setName(name);
+                            return skill;
+                        }
+                        return null;
+                    })
+                    .filter(skill -> skill != null)
+                    .collect(Collectors.toList());
+            return ok(new CountJobsPerSkillResponse(totalJobsPerSkill));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return error(ErrorCodes.FETCH_FITJOBS_ERROR);
+        }
+    }
 }
 

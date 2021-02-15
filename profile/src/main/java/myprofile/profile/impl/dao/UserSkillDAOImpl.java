@@ -1,6 +1,7 @@
 package myprofile.profile.impl.dao;
 
 import myprofile.common.dto.JobUserSkillDTO;
+import myprofile.common.dto.UserSkillJobsDTO;
 import myprofile.common.error.ErrorCodes;
 
 import myprofile.common.model.JobSkill;
@@ -64,6 +65,22 @@ public class UserSkillDAOImpl implements UserSkillDAO {
 
     }
 
+    @Override
+    public Result<List<UserSkillJobsDTO>> countJobsPerSkillByIdUser(SqlSession session, String idUser) {
+        var mapper = session.getMapper(Mapper.class);
+        try {
+            var res = mapper.countJobsPerSkillByIdUser(idUser);
+            if (res == null) {
+                return ok(Collections.emptyList());
+            }
+            return ok(res);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return error(ErrorCodes.FETCH_USERSKILL_ERROR);
+        }
+
+    }
+
     public interface Mapper {
         @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
         @Insert("INSERT into userskill(iduser,idskill) VALUES(#{idUser},#{idSkill})")
@@ -74,5 +91,10 @@ public class UserSkillDAOImpl implements UserSkillDAO {
 
         @Select("select j.idJob, count (j.id) as total, count(u.id) as matched  from jobskill j left outer  join userskill u on (j.idskill = u.idskill and u.iduser = #{idUser}) group by j.idjob")
         List<JobUserSkillDTO> fetchMatchedSkillJobs(String idUser);
+
+        @Select("select u.idskill as idSkill, count(j.id) as count from userskill u left outer join jobskill j on (j.idskill = u.idskill) where  u.iduser = #{idUser} group by u.idskill order by count(j.id) desc")
+        List<UserSkillJobsDTO> countJobsPerSkillByIdUser(String idUser);
+
+
     }
 }
