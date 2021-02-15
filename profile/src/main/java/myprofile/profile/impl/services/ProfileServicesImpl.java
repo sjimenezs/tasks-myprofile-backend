@@ -3,9 +3,7 @@ package myprofile.profile.impl.services;
 import myprofile.common.dto.CheckUserRequest;
 import myprofile.common.dto.CheckUserResponse;
 import myprofile.common.error.ErrorCodes;
-import myprofile.common.model.Job;
-import myprofile.common.model.JobSync;
-import myprofile.common.model.Skill;
+import myprofile.common.model.*;
 import myprofile.common.result.Result;
 
 import myprofile.profile.dao.*;
@@ -23,37 +21,122 @@ import static myprofile.common.result.Result.error;
 import static myprofile.common.result.Result.ok;
 
 public class ProfileServicesImpl implements ProfileServices {
-    private final UserDAO userDAO;
+    private final TorreUserDAO torreUserDAO;
     private final TorreJobDAO torreJobDAO;
     private final JobSyncDAO jobSyncDAO;
     private final JobDAO jobDAO;
     private final SkillDAO skillDAO;
     private final JobSkillDAO jobSkillDAO;
+    private final UserDAO userDAO;
+    private final UserSkillDAO userSkillDAO;
     private final ProfileConnectionFactory connectionFactory;
 
 
-    public ProfileServicesImpl(UserDAO userDAO, TorreJobDAO torreJobDAO, JobSyncDAO jobSyncDAO, JobDAO jobDAO, SkillDAO skillDAO, JobSkillDAO jobSkillDAO, ProfileConnectionFactory connectionFactory) {
-        this.userDAO = userDAO;
+    public ProfileServicesImpl(TorreUserDAO torreUserDAO, TorreJobDAO torreJobDAO, JobSyncDAO jobSyncDAO, JobDAO jobDAO, SkillDAO skillDAO, JobSkillDAO jobSkillDAO, UserDAO userDAO, UserSkillDAO userSkillDAO, ProfileConnectionFactory connectionFactory) {
+        this.torreUserDAO = torreUserDAO;
         this.torreJobDAO = torreJobDAO;
         this.jobSyncDAO = jobSyncDAO;
         this.jobDAO = jobDAO;
         this.skillDAO = skillDAO;
         this.jobSkillDAO = jobSkillDAO;
+        this.userDAO = userDAO;
+        this.userSkillDAO = userSkillDAO;
         this.connectionFactory = connectionFactory;
     }
 
     @Override
-    public Result<CheckUserResponse> checkUser(CheckUserRequest request) {
+    public Result<CheckUserResponse> login(CheckUserRequest request) {
         if (request == null || request.getUsername() == null || request.getUsername().isEmpty()) {
             return error(ErrorCodes.USERNAME_REQUIRED);
         }
-        var resultFetchUser = this.userDAO.fetchUser(request.getUsername());
+        var resultFetchUser = this.torreUserDAO.fetchUser(request.getUsername());
         if (resultFetchUser.isError()) {
             return error(resultFetchUser);
         }
         var res = new CheckUserResponse();
-        res.setExists(resultFetchUser.ok().isPresent());
+        var user = resultFetchUser.ok();
+        if (user.isPresent()) {
+            res.setExists(true);
+            var resultRegisterUser = this.registerUser(user.get());
+            if (resultRegisterUser.isError()) {
+                return error(resultRegisterUser);
+            }
+        } else {
+            res.setExists(false);
+        }
         return ok(res);
+    }
+
+    private Result<Boolean> registerUser(User user) {
+        var resultOpenTransaction = this.connectionFactory.openTransaction();
+        if (resultOpenTransaction.isError()) {
+            return error(resultOpenTransaction);
+        }
+
+        try (var session = resultOpenTransaction.ok()) {
+            var resultCurrentSkills = this.skillDAO.fetchAll(session);
+            if (resultCurrentSkills.isError()) {
+                return error(resultCurrentSkills);
+            }
+
+            var currentSkills = resultCurrentSkills.ok().stream().collect(Collectors.toMap(k -> k.getName().toLowerCase(), v -> v));
+
+            var resultFetchUser = this.userDAO.fetchByUsername(session, user.getUsername());
+            if (resultFetchUser.isError()) {
+                return error(resultFetchUser);
+            }
+
+            if (resultFetchUser.ok().isEmpty()) {
+                var resultSaveUser = this.userDAO.save(session, user);
+                if (resultSaveUser.isError()) {
+                    return error(resultFetchUser);
+                }
+            }
+
+            var resultSaveUserSkills = this.saveUserSkills(session, user, currentSkills);
+            if (resultSaveUserSkills.isError()) {
+                return error(resultSaveUserSkills);
+            }
+
+            session.commit();
+
+        }
+
+        return ok(true);
+    }
+
+    private Result<Boolean> saveUserSkills(SqlSession session, User user, Map<String, Skill> alreadyProcessedSkills) {
+        if (user.getSkills() == null) {
+            return ok(true);
+        }
+        var resultFetchAlreadyUserSkills = this.userSkillDAO.fetchAllIdsByIdUser(session, user.getId());
+        if (resultFetchAlreadyUserSkills.isError()) {
+            return error(resultFetchAlreadyUserSkills);
+        }
+        var alreayUserSkills = new HashSet<Integer>(resultFetchAlreadyUserSkills.ok());
+        for (var userSkill : user.getSkills()) {
+            var skill = alreadyProcessedSkills.get(userSkill.getSkillName().toLowerCase());
+            if (skill == null) {
+                skill = new Skill();
+                skill.setName(userSkill.getSkillName());
+                var rSaveSkill = this.skillDAO.save(session, skill);
+                if (rSaveSkill.isError()) {
+                    return error(rSaveSkill);
+                }
+                skill.setId(rSaveSkill.ok());
+                alreadyProcessedSkills.put(userSkill.getSkillName().toLowerCase(), skill);
+            }
+            if (alreayUserSkills.contains(skill.getId())) {
+                continue;
+            }
+
+            alreayUserSkills.add(skill.getId());
+
+            userSkill.setIdUser(user.getId());
+            userSkill.setIdSkill(skill.getId());
+            this.userSkillDAO.save(session, userSkill);
+        }
+        return ok(true);
     }
 
     private Result<Optional<JobSync>> fetchJobSyncRecord() {
@@ -81,15 +164,9 @@ public class ProfileServicesImpl implements ProfileServices {
             return error(resultFetchJobSyncRecord);
         }
 
-        if (resultFetchJobSyncRecord.ok().isEmpty()) {
-            return ok(true);
-        }
+        var jobSync = resultFetchJobSyncRecord.ok();
 
-        if (totalJobsAtTorre > resultFetchJobSyncRecord.ok().get().getTotal()) {
-            return ok(true);
-        }
-
-        return ok(false);
+        return ok(!jobSync.isPresent() || totalJobsAtTorre > jobSync.get().getTotal());
     }
 
     @Scheduled(fixedDelay = 1000 * 60 * 60 * 24)
@@ -98,7 +175,7 @@ public class ProfileServicesImpl implements ProfileServices {
         if (rHaveToSync.isError()) {
             return;
         }
-        if (rHaveToSync.ok()) {
+        if (rHaveToSync.ok() != null && rHaveToSync.ok()) {
             this.syncJobsFromTorre(0);
         }
     }
@@ -131,7 +208,6 @@ public class ProfileServicesImpl implements ProfileServices {
             var recordCounter = 0;
             while (jobsIterator.hasNext()) {
                 var jobFromTorre = jobsIterator.next();
-                System.out.println(jobFromTorre.getId());
                 if (alreadyInsertedJobIds.contains(jobFromTorre.getId())) {
                     continue;
                 }
@@ -155,6 +231,7 @@ public class ProfileServicesImpl implements ProfileServices {
                 }
             }
 
+            session.commit();
         }
     }
 
@@ -183,7 +260,7 @@ public class ProfileServicesImpl implements ProfileServices {
     }
 
     private Result<Iterator<Job>> fetchJobsFromTorre(int initialOffset) {
-        var jobsIterator = new JobInterator((offset) -> this.torreJobDAO.fetchJobs(500, offset), initialOffset);
+        var jobsIterator = new JobInterator(offset -> this.torreJobDAO.fetchJobs(500, offset), initialOffset);
         return ok(jobsIterator);
     }
 }

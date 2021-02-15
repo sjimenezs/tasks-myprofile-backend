@@ -5,5 +5,5 @@ import myprofile.common.dto.CheckUserResponse;
 import myprofile.common.result.Result;
 
 public interface ProfileServices {
-    Result<CheckUserResponse> checkUser(CheckUserRequest request);
+    Result<CheckUserResponse> login(CheckUserRequest request);
 }

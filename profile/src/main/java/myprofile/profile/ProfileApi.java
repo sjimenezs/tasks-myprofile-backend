@@ -6,7 +6,7 @@ import myprofile.common.result.Result;
 import myprofile.services.ProfileServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-@CrossOrigin(origins = "https://demo.samueljimenez.co", maxAge = 3600)
+
 @RestController()
 @RequestMapping("profile")
 public class ProfileApi {
@@ -22,8 +22,8 @@ public class ProfileApi {
         return "ok";
     }
 
-    @PostMapping("/v1/checkuser")
+    @PostMapping("/v1/login")
     Result<CheckUserResponse> CheckUserRequest(@RequestBody CheckUserRequest request) {
-        return this.services.checkUser(request);
+        return this.services.login(request);
     }
 }

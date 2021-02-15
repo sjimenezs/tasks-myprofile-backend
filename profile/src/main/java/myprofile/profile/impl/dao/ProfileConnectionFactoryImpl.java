@@ -2,6 +2,7 @@ package myprofile.profile.impl.dao;
 
 import myprofile.common.result.Result;
 import myprofile.profile.dao.ProfileConnectionFactory;
+import myprofile.profile.dao.UserSkillDAO;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.ibatis.mapping.Environment;
 import org.apache.ibatis.session.*;
@@ -72,6 +73,8 @@ public class ProfileConnectionFactoryImpl implements ProfileConnectionFactory {
         configuration.addMapper(JobDAOImpl.Mapper.class);
         configuration.addMapper(SkillDAOImpl.Mapper.class);
         configuration.addMapper(JobSkillDAOImpl.Mapper.class);
+        configuration.addMapper(UserDAOImpl.Mapper.class);
+        configuration.addMapper(UserSkillDAOImpl.Mapper.class);
     }
 
 }

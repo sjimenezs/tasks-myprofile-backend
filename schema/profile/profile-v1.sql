@@ -39,3 +39,19 @@ alter table job add objective varchar(5000) null;
 
 --changeset samueljimenez:jobsync-jobdate-remove
 alter table job drop column jobdate;
+
+--changeset samueljimenez:user-table
+create table user(
+id varchar(36) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+name varchar(500) not null,
+username varchar(500) not null,
+primary key (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--changeset samueljimenez:userkill-table
+create table userskill(
+id bigint auto_increment not null,
+iduser varchar(36) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+idskill int not null,
+primary key (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

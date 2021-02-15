@@ -42,7 +42,7 @@ public class JobDAOImpl implements JobDAO {
             return ok(res);
         } catch (Exception e) {
             e.printStackTrace();
-            return error(ErrorCodes.FETCH_SKILL_ERROR);
+            return error(ErrorCodes.FETCH_JOB_ERROR);
         }
 
     }

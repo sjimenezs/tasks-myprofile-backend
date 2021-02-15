@@ -15,8 +15,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 public class ProfileConfig {
     @Bean
-    public ProfileServices profileServices(UserDAO userDAO, TorreJobDAO torreJobDAO, JobSyncDAO jobSyncDAO, JobDAO jobDAO, ProfileConnectionFactory connectionFactory, SkillDAO skillDAO, JobSkillDAO jobSkillDAO) {
-        return new ProfileServicesImpl(userDAO, torreJobDAO, jobSyncDAO, jobDAO, skillDAO, jobSkillDAO, connectionFactory);
+    public ProfileServices profileServices(TorreUserDAO torreUserDAO, TorreJobDAO torreJobDAO, JobSyncDAO jobSyncDAO, JobDAO jobDAO, ProfileConnectionFactory connectionFactory, SkillDAO skillDAO, JobSkillDAO jobSkillDAO, UserSkillDAO userSkillDAO, UserDAO userDAO) {
+        return new ProfileServicesImpl(torreUserDAO, torreJobDAO, jobSyncDAO, jobDAO, skillDAO, jobSkillDAO, userDAO, userSkillDAO, connectionFactory);
     }
 
     @Bean
@@ -25,8 +25,8 @@ public class ProfileConfig {
     }
 
     @Bean
-    public UserDAO userDAO() {
-        return new UserDAOImpl();
+    public TorreUserDAO torreUserDAO() {
+        return new TorreUserDAOImpl();
     }
 
     @Bean
@@ -47,6 +47,16 @@ public class ProfileConfig {
     @Bean
     public JobSkillDAO jobSkillDAO() {
         return new JobSkillDAOImpl();
+    }
+
+    @Bean
+    public UserSkillDAO userSkillDAO() {
+        return new UserSkillDAOImpl();
+    }
+
+    @Bean
+    public UserDAO userDAO() {
+        return new UserDAOImpl();
     }
 
     @Bean
