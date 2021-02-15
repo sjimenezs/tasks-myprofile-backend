@@ -1,7 +1,6 @@
 package myprofile.profile.impl.services;
 
-import myprofile.common.dto.CheckUserRequest;
-import myprofile.common.dto.CheckUserResponse;
+import myprofile.common.dto.*;
 import myprofile.common.error.ErrorCodes;
 import myprofile.common.model.*;
 import myprofile.common.result.Result;
@@ -11,10 +10,7 @@ import myprofile.services.ProfileServices;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.scheduling.annotation.Scheduled;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static myprofile.common.result.Result.error;
@@ -169,7 +165,7 @@ public class ProfileServicesImpl implements ProfileServices {
         return ok(!jobSync.isPresent() || totalJobsAtTorre > jobSync.get().getTotal());
     }
 
-    @Scheduled(fixedDelay = 1000 * 60 * 60 * 24)
+    //@Scheduled(fixedDelay = 1000 * 60 * 60 * 24)
     public void syncJobsOfferTask() {
         var rHaveToSync = this.haveToSyncJobs();
         if (rHaveToSync.isError()) {
@@ -263,4 +259,64 @@ public class ProfileServicesImpl implements ProfileServices {
         var jobsIterator = new JobInterator(offset -> this.torreJobDAO.fetchJobs(500, offset), initialOffset);
         return ok(jobsIterator);
     }
+
+    @Override
+    public Result<FetchFitJobsResponse> fetchFitJobs(FetchFitJobsRequest request) {
+        if (request == null || request.getUsername() == null || request.getUsername().isEmpty()) {
+            return error(ErrorCodes.USERNAME_REQUIRED);
+        }
+
+        var resultOpenSession = this.connectionFactory.openSession();
+        if (resultOpenSession.isError()) {
+            return error(resultOpenSession);
+        }
+        try (var session = resultOpenSession.ok()) {
+            var resultFetchUser = this.userDAO.fetchByUsername(session, request.getUsername());
+            if (resultFetchUser.isError()) {
+                return error(resultFetchUser);
+            }
+
+            var user = resultFetchUser.ok();
+            if (user.isEmpty()) {
+                return error(ErrorCodes.NO_USER_FOUND);
+            }
+
+            var resultMatchedJobs = this.userSkillDAO.fetchMatchedSkillJobs(session, user.get().getId());
+            if (resultMatchedJobs.isError()) {
+                return error(resultMatchedJobs);
+            }
+            var matchedJobs = resultMatchedJobs.ok().stream()
+                    .filter(job -> job.getMatched() > 0 && job.getTotal() > 0)
+                    .map(job -> new MatchedJob(groupPercent(((float) job.getMatched()) / ((float) job.getTotal())), 1))
+                    .filter(matchedJob -> matchedJob.getPercent() > 50.0)
+                    .collect(Collectors.groupingBy(MatchedJob::getPercent))
+                    .entrySet().stream().map(entry -> new MatchedJob(entry.getKey(), entry.getValue().size()))
+                    .sorted(Comparator.comparing(MatchedJob::getPercent))
+                    .collect(Collectors.toList());
+            return ok(new FetchFitJobsResponse(matchedJobs));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return error(ErrorCodes.FETCH_FITJOBS_ERROR);
+        }
+    }
+
+    private int groupPercent(double percent) {
+        if (percent < 0.50) {
+            return 0;
+        } else if (percent < 0.60) {
+            return 50;
+        } else if (percent < 0.70) {
+            return 60;
+        } else if (percent < 0.80) {
+            return 70;
+        } else if (percent < 0.90) {
+            return 80;
+        } else if (percent < 1.0) {
+            return 90;
+        } else if (percent == 1.0) {
+            return 100;
+        }
+        return 0;
+    }
 }
+

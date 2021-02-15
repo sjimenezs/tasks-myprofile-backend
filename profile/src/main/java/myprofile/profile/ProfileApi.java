@@ -2,6 +2,8 @@ package myprofile.profile;
 
 import myprofile.common.dto.CheckUserRequest;
 import myprofile.common.dto.CheckUserResponse;
+import myprofile.common.dto.FetchFitJobsRequest;
+import myprofile.common.dto.FetchFitJobsResponse;
 import myprofile.common.result.Result;
 import myprofile.services.ProfileServices;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,5 +27,10 @@ public class ProfileApi {
     @PostMapping("/v1/login")
     Result<CheckUserResponse> CheckUserRequest(@RequestBody CheckUserRequest request) {
         return this.services.login(request);
+    }
+
+    @PostMapping("/v1/fetchfittojob")
+    Result<FetchFitJobsResponse> fetchFitJobs(@RequestBody FetchFitJobsRequest request) {
+        return this.services.fetchFitJobs(request);
     }
 }

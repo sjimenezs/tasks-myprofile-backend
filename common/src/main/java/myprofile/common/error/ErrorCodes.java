@@ -20,4 +20,6 @@ public class ErrorCodes {
     public static final String FETCH_USER_ERROR = "FETCH_USER_ERROR";
     public static final String SAVE_USERSKILL_ERROR = "SAVE_USERSKILL_ERROR";
     public static final String FETCH_USERSKILL_ERROR = "FETCH_USERSKILL_ERROR";
+    public static final String FETCH_FITJOBS_ERROR = "FETCH_FITJOBS_ERROR";
+    public static final String NO_USER_FOUND = "NO_USER_FOUND";
 }
