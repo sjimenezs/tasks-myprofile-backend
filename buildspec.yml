@@ -26,6 +26,9 @@ phases:
       - rm -rf server
       - mkdir server
       - cd ..
+      - export JAVA_HOME=$CODEBUILD_SRC_DIR/image/java
+      - export PATH=$PATH:$CODEBUILD_SRC_DIR/image/java/bin
+      - gradle -v
       - cd server
       - gradle bootJar
       - cd ..
