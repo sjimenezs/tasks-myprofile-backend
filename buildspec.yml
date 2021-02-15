@@ -14,6 +14,14 @@ phases:
       - REPOSITORY_URI=807354200398.dkr.ecr.us-east-2.amazonaws.com/task-demo
       - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
       - IMAGE_TAG=build-$(echo $CODEBUILD_BUILD_ID | awk -F":" '{print $2}')
+  install:
+    run-as: root
+    commands:
+      - echo Installing gradle
+      - mkdir -p /opt/gradle
+      - wget https://services.gradle.org/distributions/gradle-6.8.2-bin.zip
+      - unzip -d /opt/gradle gradle-6.8.2-bin.zip
+      - export PATH=$PATH:/opt/gradle/gradle-6.8.2/bin
   build:
     commands:
       - ls /codebuild/output/*
