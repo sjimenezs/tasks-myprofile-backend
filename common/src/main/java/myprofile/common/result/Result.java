@@ -51,7 +51,7 @@ public class Result<T> {
         }
     }
 
-    public static Result<?> error(Result<?> error) {
+    public static Result error(Result error) {
         return error(error.getErrorCodes());
     }
 
