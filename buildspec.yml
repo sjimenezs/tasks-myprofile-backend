@@ -17,9 +17,6 @@ phases:
   install:
     run-as: root
     commands:
-      - wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.4.0.2170-linux.zip
-      - unzip sonar-scanner-cli-4.4.0.2170-linux.zip
-      - ./sonar-scanner-4.4.0.2170-linux/bin/sonar-scanner   -Dsonar.organization=sjimenezs-tasks-myprofile-back   -Dsonar.projectKey=sjimenezs_tasks-myprofile-backend   -Dsonar.sources=./   -Dsonar.host.url=https://sonarcloud.io
       - echo Installing gradle
       - mkdir -p /opt/gradle
       - wget https://services.gradle.org/distributions/gradle-6.8.2-bin.zip
@@ -42,6 +39,7 @@ phases:
       - export PATH=$PATH:$CODEBUILD_SRC_DIR/image/java/bin
       - /opt/gradle/gradle-6.8.2/bin/gradle -v
       - cd server
+      - /opt/gradle/gradle-6.8.2/bin/gradle sonarqube
       - /opt/gradle/gradle-6.8.2/bin/gradle bootJar
       - cd ..
       - mv server/build/libs/server-0.0.1.jar image/server/server-0.0.1.jar
