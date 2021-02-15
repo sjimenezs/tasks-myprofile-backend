@@ -18,21 +18,21 @@ phases:
     commands:
       - ls /codebuild/output/*
       - ls $CODEBUILD_SRC_DIR
-      - cd build
-      - wget https://corretto.aws/downloads/resources/11.0.8.10.1/amazon-corretto-11.0.8.10.1-linux-x64.tar.gz
-      - tar -zxvf amazon-corretto-11.0.8.10.1-linux-x64.tar.gz
-      - mv amazon-corretto-11.0.8.10.1-linux-x64 java
-      - rm amazon-corretto-11.0.8.10.1-linux-x64.tar.gz
+      - cd image
+      - wget https://download.java.net/java/GA/jdk15.0.2/0d1cfde4252546c6931946de8db48ee2/7/GPL/openjdk-15.0.2_linux-x64_bin.tar.gz
+      - tar -zxvf openjdk-15.0.2_linux-x64_bin.tar.gz
+      - mv jdk-15.0.2 java
+      - rm openjdk-15.0.2_linux-x64_bin.tar.gz
       - rm -rf server
       - mkdir server
       - cd ..
       - mvn clean package -Dmaven.test.skip=true -Dhttps.protocols=TLSv1.2
-      - rm -rf services/target/classes
-      - rm -rf services/target/generated-sources
-      - rm -rf services/target/maven-status
-      - rm -rf services/target/maven-archiver
-      - rm -rf services/target/test-classes
-      - mv services/target/* build/server
+      - rm -rf server/target/classes
+      - rm -rf server/target/generated-sources
+      - rm -rf server/target/maven-status
+      - rm -rf server/target/maven-archiver
+      - rm -rf server/target/test-classes
+      - mv server/target/* build/server
       - cd build
       - docker build -t $REPOSITORY_URI:latest ./
       - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
