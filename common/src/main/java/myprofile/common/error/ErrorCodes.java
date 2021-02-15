@@ -1,10 +1,9 @@
 package myprofile.common.error;
 
-import myprofile.common.result.Result;
-
-import java.util.List;
-
 public class ErrorCodes {
+    private ErrorCodes(){
+
+    }
     public static final String USERNAME_REQUIRED = "USERNAME_REQUIRED";
     public static final String NO_TORRE_API_DEFINED = "NO_TORRE_API_DEFINED";
     public static final String USER_FETCH_ERROR = "USER_FETCH_ERROR";

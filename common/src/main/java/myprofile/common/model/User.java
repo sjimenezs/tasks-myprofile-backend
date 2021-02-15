@@ -1,6 +1,7 @@
 package myprofile.common.model;
 
 import java.util.List;
+import java.util.Objects;
 
 public class User {
     private String id;
@@ -38,5 +39,28 @@ public class User {
 
     public void setSkills(List<UserSkill> skills) {
         this.skills = skills;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof User)) return false;
+        User user = (User) o;
+        return Objects.equals(getId(), user.getId()) && Objects.equals(getName(), user.getName()) && Objects.equals(getUsername(), user.getUsername()) && Objects.equals(getSkills(), user.getSkills());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getName(), getUsername(), getSkills());
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", username='" + username + '\'' +
+                ", skills=" + skills +
+                '}';
     }
 }

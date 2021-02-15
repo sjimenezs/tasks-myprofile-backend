@@ -5,7 +5,7 @@ import myprofile.common.error.MyProfileError;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Result<T>{
+public class Result<T> {
     private T ok;
     private boolean validated = false;
     private List<MyProfileError> errorCodes = new ArrayList<>();
@@ -22,36 +22,36 @@ public class Result<T>{
         this.errorCodes.addAll(errores);
     }
 
-    public T ok() throws RuntimeException {
+    public T ok() throws ResultNoValidatedException {
         if (!validated || isError()) {
-            throw new RuntimeException("OK no existe. Error");
+            throw new ResultNoValidatedException();
         }
         return ok;
     }
 
-    public Result addError(MyProfileError error) {
+    public Result<?> addError(MyProfileError error) {
         this.errorCodes.add(error);
         return this;
     }
 
     public boolean isError() {
         validated = true;
-        return this.errorCodes.size() > 0;
+        return !this.errorCodes.isEmpty();
     }
 
     public static <T> Result<T> ok(T ok) {
-        return new Result<T>(ok);
+        return new Result<>(ok);
     }
 
     public static <T> Result<T> ok(Result ok) {
         if (ok == null) {
-            return new Result<T>((T) null);
+            return new Result<>((T) null);
         } else {
-            return new Result<T>((T) ok.ok());
+            return new Result<>((T) ok.ok());
         }
     }
 
-    public static Result error(Result error) {
+    public static Result<?> error(Result<?> error) {
         return error(error.getErrorCodes());
     }
 
