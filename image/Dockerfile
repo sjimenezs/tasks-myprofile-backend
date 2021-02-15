@@ -8,7 +8,6 @@ COPY server /app/server/bin
 COPY schema /app/server/schema
 COPY java /app/java
 COPY start /app/server/bin/start.sh
-COPY log.xml /app/server/bin/log.xml
 RUN ["chmod", "+x", "/app/server/bin/start.sh"]
 CMD [ "/app/server/bin/start.sh"]
 EXPOSE 8080
